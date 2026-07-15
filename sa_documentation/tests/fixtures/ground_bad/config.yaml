@@ -1,0 +1,19 @@
+# НЕвалидный config.yaml (fixture ground_bad)
+company: ACME
+product:
+  name: Billing
+  slug: "acme billing"   # НЕвалид: пробел в ascii-slug
+team:
+  size: 3
+  roster:
+    # product_engineer ОТСУТСТВУЕТ — обязан быть
+    product_ops: Cortex
+    growth_engineer: Cortex
+cortex:
+  phase_target: 2
+  ruflo_mcp: true
+  obsidian: true
+onboarding:
+  status: init
+created: 2026-06-21
+paf_step: 0

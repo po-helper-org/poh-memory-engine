@@ -1,0 +1,3 @@
+# НЕвалидный registry (fixture ground_bad) — slug с заглавной
+nexus_types:
+  - {slug: Market,   source: default, onboarded: todo}

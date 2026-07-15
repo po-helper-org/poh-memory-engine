@@ -1,0 +1,20 @@
+# Валидный config.yaml (fixture ground_ok)
+company: ACME
+product:
+  name: Billing
+  slug: acme-billing
+  idea: Подписочный биллинг для SMB с автоинвойсами.
+team:
+  size: 3
+  roster:
+    product_engineer: Jane      # ОБЯЗАТЕЛЕН
+    product_ops: Cortex
+    growth_engineer: Cortex
+cortex:
+  phase_target: 2
+  ruflo_mcp: true
+  obsidian: true
+onboarding:
+  status: init
+created: 2026-06-21
+paf_step: 0
