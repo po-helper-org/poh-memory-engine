@@ -8,6 +8,15 @@
 
 Носитель истины — markdown в git (Node schema во frontmatter). Граф и вектор-индекс — **производные и пересобираемые** артефакты поверх него. Движок детерминированно выводит типизированные связи из frontmatter, гейтит материализацию (ноль workslop / ноль висячих рёбер) и измеряет связность графа с хребтом целей (OKR).
 
+## Два яруса
+
+| Ярус | Пакет | Роль |
+|---|---|---|
+| **Markdown (истина)** | `paf_index/` | детерминированная деривация типизированных рёбер из frontmatter, проводка, гейт |
+| **Граф + вектор (производный)** | `poh_memory/` | ingest в граф-стор, вектор-индекс, claim-слой (битемпораль, противоречия, вытеснение), запросы, риски, reflexion |
+
+Ярус графа опционален по зависимостям: `pip install -e ".[graph]"` (falkordb, networkx, lancedb, graphiti-core). Без них markdown-ярус работает полностью, тесты граф-яруса пропускаются.
+
 ## Что здесь есть (текущее состояние)
 
 - **`paf_index/`** — детерминированный пайплайн: загрузка нот → деривация типизированных рёбер (хребет OKR + ценностная ось PAF) → проводка во frontmatter → гейт валидации → отчёты.
@@ -16,6 +25,7 @@
   - `write.py` — проводка рёбер во frontmatter (merge-ветка = антиклоббер ручных связей).
   - `gaps.py` — детектор достижимости от хребта KR (оракул связности I4/I6), фильтр каркаса.
   - `episode.py`/`okr.py`/`ground.py`/`resolve.py`/`reconcile.py`/`candidates.py`/`report.py` — эпизоды, OKR-хребет, заземление, согласование, очередь кандидатов, отчёты.
+- **`poh_memory/`** — ярус графа и вектора: `ingest.py`/`build.py` (наполнение стора), `client.py`/`vectors.py`/`embedder.py` (граф-бэкенд и вектор-индекс), `claims.py`/`temporal.py`/`contradictions.py`/`supersede.py` (claim-слой: автор, битемпоральность, противоречия, вытеснение), `query.py` (обход и поиск), `risk.py`/`impact.py`/`insight.py`/`communities.py`/`reflexion.py` (аналитика поверх графа).
 - **`sa_documentation/`** — схема, каталог, валидатор, дизайн-спеки.
   - `nexus_schema.md` / `nexus_catalog.md` / `ground_schema.md` / `naming_conventions.md` — модель данных PAF.
   - `validate_ground.py` — гейт: обязательные поля, `NODE_TYPES` enum, workslop, висячие рёбра, wilting/ripeness.
