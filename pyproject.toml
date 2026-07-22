@@ -9,6 +9,9 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0"]
+# Graph + vector tier (poh_memory). Optional: the markdown tier (paf_index)
+# works without them.
+graph = ["falkordb", "networkx", "lancedb", "graphiti-core"]
 
 [tool.pytest.ini_options]
-testpaths = ["sa_documentation/tests"]
+testpaths = ["tests", "sa_documentation/tests"]
