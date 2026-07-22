@@ -19,6 +19,19 @@ def claim_id(subject: str, aspect: str, value: str, episode: str) -> str:
     return f"claim-{episode}-{h}"
 
 
+# Aspect classes: a commitment is a promise with a comparable value (a date, a
+# number) whose change over time is a plan shift; a state is an assertion about
+# how things are; an opinion carries no commitment.
+ASPECT_KINDS = {"commitment", "state", "opinion"}
+VALUE_TYPES = {"date", "number", "text"}
+
+
+def _enum(raw, allowed: set[str], default: str) -> str:
+    """Controlled value with a safe fallback — unknown input never breaks ingest."""
+    v = str(raw) if raw is not None else ""
+    return v if v in allowed else default
+
+
 def parse_claims(node) -> list[dict]:
     """node: paf_index.frontmatter.Node. Возвращает нормализованные claim-dict'ы."""
     raw = node.frontmatter.get("claims")
@@ -45,6 +58,12 @@ def parse_claims(node) -> list[dict]:
             "value": value,
             "polarity": str(c.get("polarity") or "neutral"),
             "speaker": c.get("speaker"),
+            # Commitment semantics: who may assert this, and is the value
+            # comparable over time (basis for detecting plan shifts).
+            "speaker_role": c.get("speaker_role"),
+            "aspect_kind": _enum(c.get("aspect_kind"), ASPECT_KINDS, "state"),
+            "value_type": _enum(c.get("value_type"), VALUE_TYPES, "text"),
+            "value_norm": c.get("value_norm"),
             "grounded_node": c.get("grounded_node"),
             "confidence": c.get("confidence"),
             "episode": node.node_id,
