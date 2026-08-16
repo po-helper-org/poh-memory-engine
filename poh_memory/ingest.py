@@ -12,7 +12,7 @@ import logging
 import pathlib
 from falkordb import FalkorDB
 from poh_memory.config import FALKOR_HOST, FALKOR_PORT
-from poh_memory.edges import semantic_edges, node_titles
+from poh_memory.edges import SEM_FIELDS, semantic_edges, node_titles
 from poh_memory.supersede import reconcile_edges
 from poh_memory.claims import episode_claims
 from poh_memory.communities import detect_communities
@@ -20,7 +20,11 @@ from poh_memory.query import _load_graph
 
 log = logging.getLogger(__name__)
 
-_REL = {"SERVES", "DELIVERS", "MENTIONS"}
+# Допустимые типы рёбер = значения SEM_FIELDS (хребет + ценностная ось PAF).
+# Множество константное и закрытое: тип подставляется в шаблон Cypher, поэтому
+# whitelist остаётся гейтом инъекции. Расходись он с SEM_FIELDS — рёбра ценностной
+# оси доходили бы сюда и молча отбрасывались (было так до Issue #9).
+_REL = frozenset(SEM_FIELDS.values())
 
 
 def _episode_date(node_id: str) -> str | None:
