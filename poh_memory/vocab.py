@@ -6,7 +6,21 @@ from __future__ import annotations
 import pathlib
 import yaml
 
-DEFAULT_VOCAB_PATH = pathlib.Path("GROUND/_index/aspect-vocab.yaml")   # относительно cwd (репо-корень)
+VOCAB_RELPATH = pathlib.Path("GROUND/_index/aspect-vocab.yaml")   # относительно корня волта
+DEFAULT_VOCAB_PATH = VOCAB_RELPATH                                # cwd = корень волта
+
+
+def vocab_path_for(nexus_root) -> pathlib.Path:
+    """Путь словаря по волту, а не по cwd: движок работает над внешним волтом.
+
+    `nexus_root` = <волт>/GROUND/NEXUS -> поднимаемся до GROUND. Если GROUND в
+    пути нет, трактуем `nexus_root` как корень волта.
+    """
+    p = pathlib.Path(nexus_root)
+    for anc in (p, *p.parents):
+        if anc.name == "GROUND":
+            return anc / "_index" / "aspect-vocab.yaml"
+    return p / VOCAB_RELPATH
 
 
 def load_aspect_vocab(path=DEFAULT_VOCAB_PATH) -> dict[str, set[str]]:

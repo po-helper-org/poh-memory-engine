@@ -9,7 +9,7 @@ from poh_memory.config import FALKOR_HOST, FALKOR_PORT
 from poh_memory.query import _load_graph, kr_to_replica
 from poh_memory.claims import episode_claims
 from poh_memory.contradictions import candidate_pairs
-from poh_memory.vocab import load_aspect_vocab, canonical_aspects
+from poh_memory.vocab import load_aspect_vocab, canonical_aspects, vocab_path_for
 
 
 def _resolved(c: dict) -> bool:
@@ -27,7 +27,9 @@ def analyze(graph_name: str, nexus_root, host: str = FALKOR_HOST,
     goal_coverage = {kr: len(kr_to_replica(graph_name, kr)) for kr in krs}  # instance-global config
     empty_krs = sorted([kr for kr, n in goal_coverage.items() if n == 0])
     claims = episode_claims(pathlib.Path(nexus_root))
-    canon = canonical_aspects(load_aspect_vocab())
+    # словарь живёт в волте (не в cwd) — иначе при запуске извне он пуст и ВСЕ
+    # аспекты молча уезжают в off_vocab
+    canon = canonical_aspects(load_aspect_vocab(vocab_path_for(nexus_root)))
     off_vocab = sorted({c["aspect"] for c in claims if c["aspect"] not in canon})
     grounded = sum(1 for c in claims if c.get("grounded_node"))
     contradictions = candidate_pairs(claims)
