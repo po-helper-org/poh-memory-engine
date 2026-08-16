@@ -11,7 +11,19 @@ dependencies = [
 dev = ["pytest>=8.0"]
 # Graph + vector tier (poh_memory). Optional: the markdown tier (paf_index)
 # works without them.
-graph = ["falkordb", "networkx", "lancedb", "graphiti-core"]
+# scipy: networkx imports it for pagerank (PPR — query/impact/insight).
+# sentence-transformers: local bge-m3 embedder (poh_memory/embedder.py).
+graph = ["falkordb", "networkx", "scipy", "lancedb", "graphiti-core",
+         "sentence-transformers"]
+
+[build-system]
+# Flat layout with several top-level packages — auto-discovery bails out and
+# `pip install -e` fails without an explicit package list (Python 3.14).
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["paf_index", "poh_memory", "sa_documentation"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests", "sa_documentation/tests"]
