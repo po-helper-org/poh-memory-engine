@@ -1,15 +1,22 @@
 """Чтение СЕМАНТИЧЕСКИХ рёбер из материализованного frontmatter vault.
 
-Правило 1: граф = фактические frontmatter-рёбра (serves/delivered_by/mentions),
+Правило 1: граф = фактические frontmatter-рёбра (хребет + ценностная ось PAF),
 НЕ пере-деривка (иначе теряются материализованные рёбра инкремента-5).
 Правило 2: только семантические рёбра; owns_node/involves ИСКЛЮЧЕНЫ (единый
 владелец = мега-хаб, губит многошаг).
+Правило 3: вокабуляр ценностной оси берётся из paf_index.derive.FIELD_PREDICATES —
+один источник на оба яруса. Разойдись они, L2 молча терял бы value-контент:
+узел минтится только как конец семантического ребра.
 """
 from __future__ import annotations
 import pathlib
 from paf_index import frontmatter as fm
+from paf_index.derive import FIELD_PREDICATES
 
-SEM_FIELDS = {"serves": "SERVES", "delivered_by": "DELIVERS", "mentions": "MENTIONS"}
+# Хребет OKR (serves/delivered_by) + слабая ассоциация (mentions) + ценностная
+# ось PAF (realizes/based_on/depends_on/addresses/satisfies/has_need).
+SEM_FIELDS = {"serves": "SERVES", "delivered_by": "DELIVERS", "mentions": "MENTIONS",
+              **FIELD_PREDICATES}
 
 
 def _all_nodes(nexus_root: pathlib.Path):
