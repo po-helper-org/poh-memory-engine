@@ -60,6 +60,18 @@ def test_ingest_relation_whitelist_covers_value_axis():
     assert set(SEM_FIELDS.values()) <= _REL
 
 
+def test_retrieval_graph_relations_cover_value_axis():
+    """Третий фильтр: query._SEM_REL. Питает PPR, детект сообществ и метрику
+    isolated_nodes — отсекая ценностную ось, все три считают по хребту OKR."""
+    pytest.importorskip("falkordb")
+    pytest.importorskip("networkx")
+    from poh_memory.query import _SEM_REL
+
+    assert set(SEM_FIELDS.values()) <= _SEM_REL
+    # правило 2: claim-слой и хабы в retrieval-граф не входят
+    assert {"ASSERTS", "ABOUT", "SUPERSEDED_BY", "OWNS"}.isdisjoint(_SEM_REL)
+
+
 def test_hub_fields_stay_excluded(tmp_path):
     """owns_node / involves — мега-хаб, в L2 не попадают (docstring edges.py)."""
     _write(tmp_path, "f-a", "feature",

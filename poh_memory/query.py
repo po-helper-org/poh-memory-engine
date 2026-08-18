@@ -2,18 +2,22 @@
 seeded на KR, возвращаем достигнутые эпизоды + shortest-path цепочку.
 
 FalkorDB: узлы label Entity со свойством `name`(=канонический node_id), тип ребра =
-SERVES/DELIVERS/MENTIONS. Читаем a.name/type(r)/b.name + битемпоральные метки ребра
-(valid_at/invalid_at/expired_at) и фильтруем предикатом active_at на момент as_of.
-Retrieval-граф семантический: `_load_graph` фильтрует до `_SEM_REL`
-(SERVES/DELIVERS/MENTIONS) — хабы (OWNS) и claim-слой (ASSERTS/ABOUT) вне PPR (правило 2).
+хребет OKR + ценностная ось PAF. Читаем a.name/type(r)/b.name + битемпоральные метки
+ребра (valid_at/invalid_at/expired_at) и фильтруем предикатом active_at на момент as_of.
+Retrieval-граф семантический: `_load_graph` фильтрует до `_SEM_REL` — хабы (OWNS) и
+claim-слой (ASSERTS/ABOUT) вне PPR (правило 2).
 """
 from __future__ import annotations
 import networkx as nx
 from falkordb import FalkorDB
 from poh_memory.config import FALKOR_HOST, FALKOR_PORT
+from poh_memory.edges import SEM_FIELDS
 from poh_memory.temporal import active_at
 
-_SEM_REL = {"SERVES", "DELIVERS", "MENTIONS"}  # retrieval-граф без claim-слоя (ASSERTS/ABOUT) и хабов
+# Тот же вокабуляр, что у edges/ingest — один источник на все три фильтра. Правило 2
+# держится само: claim-слой (ASSERTS/ABOUT/SUPERSEDED_BY) и хаб OWNS в SEM_FIELDS
+# отсутствуют, поэтому в retrieval-граф не попадают.
+_SEM_REL = frozenset(SEM_FIELDS.values())
 
 
 def _load_graph(graph_name: str, host: str = FALKOR_HOST, port: int = FALKOR_PORT,
