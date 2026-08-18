@@ -40,6 +40,16 @@ def test_analyze_integration(monkeypatch):
     _reset()
 
 
+def _vault_with_vocab(tmp_path, canonical: str) -> pathlib.Path:
+    """Волт с словарём аспектов; возвращает NEXUS-корень (как его получает analyze)."""
+    nexus = tmp_path / "GROUND" / "NEXUS"
+    nexus.mkdir(parents=True)
+    (tmp_path / "GROUND" / "_index").mkdir(parents=True)
+    (tmp_path / "GROUND" / "_index" / "aspect-vocab.yaml").write_text(
+        f"aspects:\n  - canonical: {canonical}\n    synonyms: []\n", encoding="utf-8")
+    return nexus
+
+
 def test_analyze_reports_off_vocab_aspects(monkeypatch, tmp_path):
     _reset()
     monkeypatch.setattr(ing_mod, "semantic_edges", lambda r: [("kr-a", "sys-a", "SERVES"),
@@ -49,10 +59,12 @@ def test_analyze_reports_off_vocab_aspects(monkeypatch, tmp_path):
     ingest(pathlib.Path("."), GRAPH, ingest_at="2026-07-13")
     # insight reads claims via its own episode_claims; return a claim with a canonical + an off-vocab aspect
     monkeypatch.setattr("poh_memory.insight.episode_claims", lambda r: [
-        {**_claim("c1", "pulse-1", grounded="sys-a"), "aspect": "актуальность/жизненный цикл"},  # canonical (seeded)
+        {**_claim("c1", "pulse-1", grounded="sys-a"), "aspect": "актуальность/жизненный цикл"},  # canonical
         {**_claim("c2", "pulse-1", grounded="sys-a"), "aspect": "free-text-not-in-vocab"},        # off-vocab
     ])
-    res = analyze(GRAPH, pathlib.Path("."))
+    # словарь живёт в волте, а не в cwd — analyze обязан найти его от nexus_root
+    nexus = _vault_with_vocab(tmp_path, "актуальность/жизненный цикл")
+    res = analyze(GRAPH, nexus)
     assert "free-text-not-in-vocab" in res["off_vocab_aspects"]
     assert "актуальность/жизненный цикл" not in res["off_vocab_aspects"]
     _reset()
