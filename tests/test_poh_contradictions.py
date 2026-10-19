@@ -64,14 +64,14 @@ def test_different_subject_same_node_aspect_is_not_pair():
     # same grounded_node + aspect, DIFFERENT subject -> different entities -> NOT a pair
     a = _c("1", polarity="positive")
     b = _c("2", polarity="negative")
-    a["subject"] = "Фонд МДТЗК эталон"
-    b["subject"] = "Фонд МДТЗК Без Агентов"
+    a["subject"] = "Фонд Альфа эталон"
+    b["subject"] = "Фонд Альфа Без Агентов"
     assert candidate_pairs([a, b]) == []
 
 
 def test_same_subject_node_aspect_diff_polarity_is_pair():
     a = _c("1", polarity="positive")
     b = _c("2", polarity="negative")
-    a["subject"] = b["subject"] = "Фонд МДТЗК Без Агентов"
+    a["subject"] = b["subject"] = "Фонд Альфа Без Агентов"
     pairs = candidate_pairs([a, b])
     assert len(pairs) == 1

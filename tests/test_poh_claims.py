@@ -9,12 +9,12 @@ def _node(node_id, claims):
 
 def test_parse_valid_claim_full():
     node = _node("pulse-2026-07-06-x", [{
-        "subject": "Фонд МДТЗК Без Агентов", "aspect": "вывод в B2B", "value": "не должен",
+        "subject": "Фонд Альфа Без Агентов", "aspect": "вывод в B2B", "value": "не должен",
         "polarity": "negative", "speaker": "Петров", "grounded_node": "ownership-live-acme-gateways",
         "confidence": 0.8,
     }])
     [c] = parse_claims(node)
-    assert c["subject"] == "Фонд МДТЗК Без Агентов"
+    assert c["subject"] == "Фонд Альфа Без Агентов"
     assert c["aspect"] == "вывод в B2B"
     assert c["value"] == "не должен"
     assert c["polarity"] == "negative"
@@ -22,7 +22,7 @@ def test_parse_valid_claim_full():
     assert c["grounded_node"] == "ownership-live-acme-gateways"
     assert c["confidence"] == 0.8
     assert c["episode"] == "pulse-2026-07-06-x"
-    assert c["id"] == claim_id("Фонд МДТЗК Без Агентов", "вывод в B2B", "не должен", "pulse-2026-07-06-x")
+    assert c["id"] == claim_id("Фонд Альфа Без Агентов", "вывод в B2B", "не должен", "pulse-2026-07-06-x")
 
 
 def test_defaults_and_derived_id_ignores_frontmatter_id():
